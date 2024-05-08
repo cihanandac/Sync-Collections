@@ -175,7 +175,7 @@ def sync_start():
 def sync_database(collection):
     count = get_total_count(collection)
     print(count)
-    for offset in range(0, 50, 10):
+    for offset in range(0, 100, 10):
         sync = SyncLock.objects.get(id=1)
         if sync.stop_requested:
             print("Sync stopped by user during database sync.")
@@ -262,7 +262,6 @@ def sync_plone(collection):
                 f"User requested stop at {stopped_time}")
             break
         if museum_object.plone_timestamp is None:
-            time.sleep(2)
             create_update_object(museum_object)
         elif museum_object.api_lastmodified > museum_object.plone_timestamp:
             create_update_object(museum_object)
