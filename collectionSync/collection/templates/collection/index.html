@@ -21,8 +21,8 @@
       updateStatus(); // Check status right after triggering sync
   }
 
-  async function triggerManualSync(ccObjectID) {
-      const response = await fetch(`/collection/manualsync/${ccObjectID}`, {
+  async function triggerManualSync(ccObjectID, ccIndexName) {
+      const response = await fetch(`/collection/manualsync/${ccObjectID}/${ccIndexName}`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -138,7 +138,7 @@
           <td>{{ museum_object.ccObjectID }}</td>
           <td>{{ museum_object.synced }}</td>
           <td>
-            <button onclick="triggerManualSync('{{ museum_object.ccObjectID }}')">Sync Object</button>
+            <button onclick="triggerManualSync('{{ museum_object.ccObjectID }}', '{{ museum_object.index_name }}')">Sync Object</button>
           </td>
           <td>{{ museum_object.title }}</td>
           <td>{{ museum_object.index_name }}</td>
