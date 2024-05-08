@@ -116,7 +116,7 @@ def syncadlib(request):
     return JsonResponse({'message': 'Only POST requests are allowed!'}, status=405)
 
 
-def manualsync(request, ccObjectID):
+def manualsync(request, ccObjectID, ccIndexName):
     sync, _ = SyncLock.objects.get_or_create(id=1)
     sync_running = sync.is_locked
 
@@ -124,7 +124,7 @@ def manualsync(request, ccObjectID):
         data = json.loads(request.body)
         if data.get('action') == 'run':
             if not sync_running:
-                sync_one_plone_object(ccObjectID)
+                sync_one_plone_object(ccObjectID, ccIndexName)
                 return JsonResponse({'message': f'Synced object {ccObjectID} successfully!'})
             else:
                 return JsonResponse({'message': 'Sync is already running!'}, status=409)
@@ -270,8 +270,9 @@ def sync_plone(collection):
             continue
 
 
-def sync_one_plone_object(ccObjectID):
-    museum_object = MuseumObject.objects.get(ccObjectID=ccObjectID)
+def sync_one_plone_object(ccObjectID, index_name):
+    museum_object = MuseumObject.objects.get(
+        ccObjectID=ccObjectID, index_name=index_name)
     create_update_object(museum_object)
 
 
