@@ -229,7 +229,7 @@ def fetch_xml_data(collection, offset):
     Returns:
     - str: The fetched XML data.
     """
-    api_url = f"http://62.221.199.184:17718/action=get&command=search&query=ccIndexName={collection}&fields=ccObjectID,timestamp, ccIndexName,objectTitle,eventTitle,BookTitle&range={offset}-{offset+10}"
+    api_url = f"http://62.221.199.184:17718/action=get&command=search&query=ccIndexName={collection}&fields=ccObjectID,timestamp,ccIndexName,objectTitle,eventTitle,BookTitle&range={offset}-{offset+10}"
     print(f"api_url: {api_url}")
     response = requests.get(api_url)
     response.raise_for_status()
