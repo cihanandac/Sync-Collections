@@ -1,0 +1,13 @@
+{% extends "collection/base.html" %} {% block title %} Collection {% endblock %}
+{% block buttonscript %} {% endblock %} {% block content %}
+
+<a href="/collection">Collection Page</a>
+<a href="/logs">Logs</a>
+<br /><br />
+<h3>
+  Sync Status:
+  <span id="syncRunning"
+    >{% if sync_running %}Syncing{% else %}Not Syncing{% endif %}</span
+  >
+</h3>
+{% endblock %}

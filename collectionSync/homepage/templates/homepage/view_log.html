@@ -1,0 +1,27 @@
+<!-- templates/collection/view_log.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log View</title>
+  </head>
+  <body>
+    <a href="/">Homepage</a>
+    <a href="/collection">Collections</a>
+    <button onclick="window.location.href='/logs'">Refresh the Page</button>
+    <h3>
+      Sync Status:
+      <span id="syncRunning"
+        >{% if sync_running %}Syncing{% else %}Not Syncing{% endif %}</span
+      >
+    </h3>
+    <h1>Log File</h1>
+    <pre>
+        {% for line in log_lines %}
+            {{ line|escape }}
+        {% endfor %}
+    </pre>
+  </body>
+</html>
