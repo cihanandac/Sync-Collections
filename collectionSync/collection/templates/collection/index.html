@@ -22,18 +22,23 @@
   }
 
   async function triggerManualSync(ccObjectID, ccIndexName) {
-      const response = await fetch(`/collection/manualsync/${ccObjectID}/${ccIndexName}`, {
+      const response = await fetch('/collection/manualsync/', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
               'X-CSRFToken': getCsrfToken()
           },
-          body: JSON.stringify({ action: 'run' })
+          body: JSON.stringify({ ccObjectID: ccObjectID, ccIndexName: ccIndexName, action: 'run' })
       });
+
+      if (!response.ok) {
+          console.error('Error:', response.statusText);
+          return;
+      }
 
       const data = await response.json();
       alert(data.message);
-      updateStatus(); // Check status after manual sync
+      updateStatus();
   }
 
   async function stopSync() {

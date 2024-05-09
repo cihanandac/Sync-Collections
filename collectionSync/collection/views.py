@@ -116,12 +116,13 @@ def syncadlib(request):
     return JsonResponse({'message': 'Only POST requests are allowed!'}, status=405)
 
 
-def manualsync(request, ccObjectID, ccIndexName):
+def manualsync(request):
     sync, _ = SyncLock.objects.get_or_create(id=1)
     sync_running = sync.is_locked
-
     if request.method == 'POST':
         data = json.loads(request.body)
+        ccObjectID = data.get('ccObjectID')
+        ccIndexName = data.get('ccIndexName')
         if data.get('action') == 'run':
             if not sync_running:
                 sync_one_plone_object(ccObjectID, ccIndexName)
