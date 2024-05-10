@@ -375,8 +375,7 @@ def create_update_object(museum_object):
            create_update_object_logger.error(log_message)
 
     except requests.exceptions.RequestException as e:
-        log_message = f"Network exception occurred for ccObjectID: {
-            museum_object.ccObjectID}: {e}"
+        log_message = f"Network exception occurred for ccObjectID: {museum_object.ccObjectID}: {e}"
         logger.exception(log_message)
 
     # Update the timestamp only if the request is successful
