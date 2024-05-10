@@ -48,8 +48,11 @@ def not_synced_objects(request):
     # Retrieve objects that are not synced
     sync_running = SyncLock.objects.get(id=1).is_locked
     not_synced = MuseumObject.objects.filter(synced=False)
+    paginator = Paginator(not_synced, 100)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     return render(request, "collection/index.html", {
-        "museum_objects": not_synced,
+        "museum_objects": page_obj,
         "sync_running": sync_running
     })
 

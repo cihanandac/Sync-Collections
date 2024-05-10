@@ -12,5 +12,5 @@ urlpatterns = [
     path("manualsync/", views.manualsync, name='manualsync'),
     path('not_synced/', views.not_synced_objects, name='not_synced'),
     path('check_status/<str:ccObjectID>/', views.check_status, name='check_status'),
-    path('all/', views.all_objects, name='all_objects'),
+    path('all/', views.index, name='all_objects'),
 ]
