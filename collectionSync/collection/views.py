@@ -176,7 +176,7 @@ def sync_start():
 def sync_database(collection):
     count = get_total_count(collection)
     print(count)
-    for offset in range(0, 100, 10):
+    for offset in range(0, count, 10):
         sync = SyncLock.objects.get(id=1)
         if sync.stop_requested:
             print("Sync stopped by user during database sync.")
@@ -277,7 +277,7 @@ def sync_one_plone_object(ccObjectID, index_name):
 
 
 def create_update_object(museum_object):
-    plone_url = f"http://localhost:8080/Plone/nl/@@admin_fixes?op=import_collection_object&object_id={museum_object.ccObjectID}&index_name={museum_object.index_name}"
+    plone_url = f"http://localhost:8081/Plone/nl/@@admin_fixes?op=import_collection_object&object_id={museum_object.ccObjectID}&index_name={museum_object.index_name}"
     try:
         response = requests.get(plone_url, auth=HTTPBasicAuth(
             plone_username, plone_password))
