@@ -365,8 +365,7 @@ def create_update_object(museum_object):
         response = requests.get(plone_url, auth=HTTPBasicAuth(
             plone_username, plone_password))
         if response.status_code == 200:
-            log_message = f"Plone object created/updated successfully for ccObjectID: {
-                museum_object.ccObjectID}"
+            log_message = f"Plone object created/updated successfully for ccObjectID: {museum_object.ccObjectID}"
             logger.info(log_message)
             create_update_object_logger.info(log_message)
 
