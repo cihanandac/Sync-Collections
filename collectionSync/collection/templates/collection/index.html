@@ -146,6 +146,7 @@
         <th>ccObjectID</th>
         <th>Synced</th>
         <th>Sync Manually</th>
+        <th>Object Logs</th>
         <th>Title</th>
         <th>Index Name</th>
         <th>Last Modified in API</th>
@@ -159,6 +160,13 @@
           <td>{{ museum_object.synced }}</td>
           <td>
             <button onclick="triggerManualSync('{{ museum_object.ccObjectID }}', '{{ museum_object.index_name }}')">Sync Object</button>
+          </td>
+          <td>
+              <form action="{% url 'show_museum_object_logs' museum_object.id %}" method="get" style="display: inline;">
+                  <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px;">
+                      Object's Logs
+                  </button>
+              </form>
           </td>
           <td>{{ museum_object.title }}</td>
           <td>{{ museum_object.index_name }}</td>
@@ -185,5 +193,10 @@
         <a href="?page={{ museum_objects.paginator.num_pages }}">last &raquo;</a>
       {% endif %}
     </span>
+    <form method="GET" action="">
+      <label for="page_number">Go to page:</label>
+      <input type="number" id="page_number" name="page" min="1" max="{{ page_obj.paginator.num_pages }}" required>
+      <button type="submit">Go</button>
+    </form>
   </div>
 {% endblock %}

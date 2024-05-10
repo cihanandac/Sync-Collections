@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MuseumObject, SyncLock
+from .models import MuseumObject, SyncLock, ObjectLog
 
 
 class MuseumObjectAdmin(admin.ModelAdmin):
@@ -12,6 +12,12 @@ class SyncLockAdmin(admin.ModelAdmin):
     readonly_fields = ("last_updated",)
 
 
+class ObjectLogAdmin(admin.ModelAdmin):
+    list_display = ("museum_object", "timestamp", "log_message")
+    list_filter = ("museum_object", "timestamp")
+    search_fields = ("museum_object__ccObjectID", "log_message")
+
 # Register both models
 admin.site.register(MuseumObject, MuseumObjectAdmin)
 admin.site.register(SyncLock, SyncLockAdmin)
+admin.site.register(ObjectLog, ObjectLogAdmin)

@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import requests
 import xml.etree.ElementTree as ET
-from .models import MuseumObject, SyncLock
+from .models import MuseumObject, SyncLock, ObjectLog
 from datetime import datetime
 from django.utils import timezone
 import time
@@ -14,6 +14,7 @@ import os
 import environ
 from decouple import config
 from django.core.paginator import Paginator
+from django.shortcuts import render, get_object_or_404
 
 collection_types_variable = config(
     'COLLECTION_TYPES', default="VanabbeCollectie")
@@ -108,35 +109,34 @@ def stopsync(request):
 def syncStartAdlib(request):
     sync, _ = SyncLock.objects.get_or_create(id=1)
     sync_running = sync.is_locked
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        if data.get('action') == 'run':
-            # Server-side function to execute
-            if sync_running == False:
-                sync_api()
-            else:
-                return JsonResponse({'message': 'Sync is already running!'})
-            return JsonResponse({'message': 'Server function executed successfully!'})
+    if request.method in ['POST', 'GET']:
+        if request.method == 'POST':
+            data = json.loads(request.body)
+        else:  # For GET requests
+            data = request.GET
+
+        if not sync_running:
+            sync_api()  # Call your sync function
+            return JsonResponse({'message': 'Sync API triggered successfully!'})
         else:
-            return JsonResponse({'message': 'Invalid action!'}, status=400)
-    return JsonResponse({'message': 'Only POST requests are allowed!'}, status=405)
+            return JsonResponse({'message': 'Sync is already running!'})
+    return JsonResponse({'message': 'Only POST and GET requests are allowed!'}, status=405)
 
 def syncStartPlone(request):
-    print('startplonesync')
     sync, _ = SyncLock.objects.get_or_create(id=1)
     sync_running = sync.is_locked
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        if data.get('action') == 'run':
-            # Server-side function to execute
-            if sync_running == False:
-                sync_collection()
-            else:
-                return JsonResponse({'message': 'Sync is already running!'})
-            return JsonResponse({'message': 'Server function executed successfully!'})
+    if request.method in ['POST', 'GET']:
+        if request.method == 'POST':
+            data = json.loads(request.body)
+        else:  # For GET requests
+            data = request.GET
+
+        if not sync_running:
+            sync_collection()  # Call your sync function
+            return JsonResponse({'message': 'Sync API triggered successfully!'})
         else:
-            return JsonResponse({'message': 'Invalid action!'}, status=400)
-    return JsonResponse({'message': 'Only POST requests are allowed!'}, status=405)
+            return JsonResponse({'message': 'Sync is already running!'})
+    return JsonResponse({'message': 'Only POST and GET requests are allowed!'}, status=405)
 
 
 def manualsync(request):
@@ -365,27 +365,43 @@ def create_update_object(museum_object):
         response = requests.get(plone_url, auth=HTTPBasicAuth(
             plone_username, plone_password))
         if response.status_code == 200:
-            logger.info(
-                f"Plone object created/updated successfully for ccObjectID: {museum_object.ccObjectID}")
-            create_update_object_logger.info(
-                f"Plone object created/updated successfully for ccObjectID: {museum_object.ccObjectID}")
-
-            print("Plone object created successfully")
+            log_message = f"Plone object created/updated successfully for ccObjectID: {
+                museum_object.ccObjectID}"
+            logger.info(log_message)
+            create_update_object_logger.info(log_message)
 
         else:
-            print("Failed to create Plone object: ", response.status_code)
-            logger.error(
-                f"Failed to create/update Plone object for ccObjectID: {museum_object.ccObjectID}. Status code: {response.status_code}")
-            create_update_object_logger.error(
-                f"Failed to create/update Plone object for ccObjectID: {museum_object.ccObjectID}. Status code: {response.status_code}")
+           log_message = f"Failed to create/update Plone object for ccObjectID: {
+               museum_object.ccObjectID}. Status code: {response.status_code}"
+           logger.error(log_message)
+           create_update_object_logger.error(log_message)
 
     except requests.exceptions.RequestException as e:
-        print("Network exception occurred: ", e)
-        logger.exception(
-            f"Network exception occurred for ccObjectID: {museum_object.ccObjectID}: {e}")
+        log_message = f"Network exception occurred for ccObjectID: {
+            museum_object.ccObjectID}: {e}"
+        logger.exception(log_message)
 
     # Update the timestamp only if the request is successful
     if response.status_code == 200:
         museum_object.synced = True
         museum_object.plone_timestamp = museum_object.api_lastmodified
         museum_object.save()
+    
+    ObjectLog.objects.create(
+        museum_object=museum_object,
+        log_message=log_message
+    )
+    ObjectLog.cleanup_old_logs(museum_object)
+
+
+
+def show_museum_object_logs(request, object_id):
+    """Retrieve logs for a specific MuseumObject."""
+
+    museum_object = get_object_or_404(MuseumObject, id=object_id)
+    logs = museum_object.logs.all().order_by('-timestamp')
+
+    return render(request, 'collection/show_logs.html', {
+        'museum_object': museum_object,
+        'logs': logs
+    })

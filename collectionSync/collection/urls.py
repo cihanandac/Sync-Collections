@@ -13,4 +13,6 @@ urlpatterns = [
     path('not_synced/', views.not_synced_objects, name='not_synced'),
     path('check_status/<str:ccObjectID>/', views.check_status, name='check_status'),
     path('all/', views.index, name='all_objects'),
+    path('show_museum_object_logs/<int:object_id>/',
+         views.show_museum_object_logs, name='show_museum_object_logs'),
 ]

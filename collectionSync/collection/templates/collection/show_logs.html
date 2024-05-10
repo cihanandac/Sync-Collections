@@ -1,0 +1,19 @@
+{% extends "collection/base.html" %}
+
+{% block title %}
+  Logs
+{% endblock %}
+
+{% block content %}
+<h1>Logs for {{ museum_object.title }}</h1>
+
+<ul>
+  {% for log in logs %}
+  <li>
+    <strong>{{ log.timestamp }}:</strong> {{ log.log_message }}
+  </li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'index' %}">Back to objects</a>
+{% endblock %}

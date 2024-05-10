@@ -31,3 +31,21 @@ class SyncLock(models.Model):
 
     def __str__(self):
         return f"Lock status: {'Locked' if self.is_locked else 'Unlocked'}"
+
+
+class ObjectLog(models.Model):
+    museum_object = models.ForeignKey(
+        MuseumObject, on_delete=models.CASCADE, related_name='logs')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    log_message = models.TextField()
+
+    def __str__(self):
+        return f"Log for {self.museum_object.ccObjectID} at {self.timestamp}"
+
+    @staticmethod
+    def cleanup_old_logs(museum_object, limit=10):
+        logs = ObjectLog.objects.filter(
+            museum_object=museum_object).order_by('-timestamp')
+        if logs.count() > limit:
+            for log in logs[limit:]:
+                log.delete()
