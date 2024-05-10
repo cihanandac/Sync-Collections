@@ -2,7 +2,7 @@ from django.db import models
 
 
 class MuseumObject(models.Model):
-    title = models.CharField(default="", max_length=50,)
+    title = models.CharField(default="", max_length=50, null=True, blank=True)
     ccObjectID = models.CharField(default="", db_index=True, max_length=50,)
     api_lastmodified = models.DateTimeField(null=True, blank=True,)
     plone_timestamp = models.DateTimeField(null=True, blank=True,)
