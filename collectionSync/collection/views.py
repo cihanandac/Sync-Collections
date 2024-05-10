@@ -370,8 +370,7 @@ def create_update_object(museum_object):
             create_update_object_logger.info(log_message)
 
         else:
-           log_message = f"Failed to create/update Plone object for ccObjectID: {
-               museum_object.ccObjectID}. Status code: {response.status_code}"
+           log_message = f"Failed to create/update Plone object for ccObjectID: {museum_object.ccObjectID}. Status code: {response.status_code}"
            logger.error(log_message)
            create_update_object_logger.error(log_message)
 
