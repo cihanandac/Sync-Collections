@@ -13,6 +13,7 @@ import logging
 import os
 import environ
 from decouple import config
+from django.core.paginator import Paginator
 
 collection_types_variable = config(
     'COLLECTION_TYPES', default="VanabbeCollectie")
@@ -29,9 +30,11 @@ create_update_object_logger = logging.getLogger('create_update_object_logger')
 def index(request):
     museum_objects = MuseumObject.objects.all()
     sync_running = SyncLock.objects.get(id=1).is_locked
-    print(museum_objects)
+    paginator = Paginator(museum_objects, 100)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     return render(request, "collection/index.html", {
-        "museum_objects": museum_objects,
+        "museum_objects": page_obj,
         "sync_running": sync_running,
     })
 
