@@ -3,7 +3,9 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("syncadlib", views.syncadlib, name='sync_adlib'),
+    # path("syncadlib", views.syncadlib, name='sync_adlib'),
+    path("syncStartPlone", views.syncStartPlone, name='sync_start_plone'),
+    path("syncStartAdlib", views.syncStartAdlib, name='sync_start_api'),
     path("stopsync", views.stopsync, name='stop_sync'),
     path("delete_plone_dates", views.delete_plone_dates, name='delete_plone_dates'),
     path('sync_status', views.sync_status, name='sync_status'),

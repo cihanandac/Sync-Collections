@@ -102,7 +102,7 @@ def stopsync(request):
     return JsonResponse({'message': 'Only POST requests are allowed!'}, status=405)
 
 
-def syncadlib(request):
+def syncStartAdlib(request):
     sync, _ = SyncLock.objects.get_or_create(id=1)
     sync_running = sync.is_locked
     if request.method == 'POST':
@@ -110,7 +110,24 @@ def syncadlib(request):
         if data.get('action') == 'run':
             # Server-side function to execute
             if sync_running == False:
-                sync_start()
+                sync_api()
+            else:
+                return JsonResponse({'message': 'Sync is already running!'})
+            return JsonResponse({'message': 'Server function executed successfully!'})
+        else:
+            return JsonResponse({'message': 'Invalid action!'}, status=400)
+    return JsonResponse({'message': 'Only POST requests are allowed!'}, status=405)
+
+def syncStartPlone(request):
+    print('startplonesync')
+    sync, _ = SyncLock.objects.get_or_create(id=1)
+    sync_running = sync.is_locked
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        if data.get('action') == 'run':
+            # Server-side function to execute
+            if sync_running == False:
+                sync_collection()
             else:
                 return JsonResponse({'message': 'Sync is already running!'})
             return JsonResponse({'message': 'Server function executed successfully!'})
@@ -175,6 +192,66 @@ def sync_start():
         create_update_object_logger.info(
             f"Sync process finished at {end_time}")
 
+def sync_api():
+    sync, _ = SyncLock.objects.get_or_create(id=1)
+    sync.is_locked = True
+    sync.stop_requested = False  # Reset the stop flag before starting
+    sync.save()
+
+    start_time = timezone.now()
+    print('triggered')
+    print(f'collection types: {collection_types}')
+    logger.info(f"Sync process started at {start_time}")
+    sync_start_logger.info(f"Sync process started at {start_time}")
+    create_update_object_logger.info(f"Sync process started at {start_time}")
+    try:
+        for collection in collection_types:
+            if sync.stop_requested:
+                stopped_time = datetime.now()
+                sync_start_logger.info(
+                    f"User requested stop at {stopped_time}")
+                break
+            sync_database(collection)
+
+    finally:
+        sync.is_locked = False
+        sync.stop_requested = False
+        sync.save()
+        end_time = timezone.now()
+        logger.info(f"Sync process finished at {end_time}")
+        sync_start_logger.info(f"Sync process finished at {end_time}")
+        create_update_object_logger.info(
+            f"Sync process finished at {end_time}")
+
+def sync_collection():
+    sync, _ = SyncLock.objects.get_or_create(id=1)
+    sync.is_locked = True
+    sync.stop_requested = False  # Reset the stop flag before starting
+    sync.save()
+
+    start_time = timezone.now()
+    print('triggered')
+    print(f'collection types: {collection_types}')
+    logger.info(f"Sync process started at {start_time}")
+    sync_start_logger.info(f"Sync process started at {start_time}")
+    create_update_object_logger.info(f"Sync process started at {start_time}")
+    try:
+        for collection in collection_types:
+            if sync.stop_requested:
+                stopped_time = datetime.now()
+                sync_start_logger.info(
+                    f"User requested stop at {stopped_time}")
+                break
+            sync_plone(collection)
+    finally:
+        sync.is_locked = False
+        sync.stop_requested = False
+        sync.save()
+        end_time = timezone.now()
+        logger.info(f"Sync process finished at {end_time}")
+        sync_start_logger.info(f"Sync process finished at {end_time}")
+        create_update_object_logger.info(
+            f"Sync process finished at {end_time}")
 
 def sync_database(collection):
     count = get_total_count(collection)

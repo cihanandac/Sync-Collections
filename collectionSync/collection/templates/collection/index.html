@@ -6,8 +6,22 @@
 
 {% block buttonscript %}
   // Function to make an API call to the server-side function
-  async function triggerServerFunction() {
-      const response = await fetch('/collection/syncadlib', {
+  async function triggerSyncAPI() {
+      const response = await fetch('/collection/syncStartAdlib', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCsrfToken()
+          },
+          body: JSON.stringify({ action: 'run' })
+      });
+
+      const data = await response.json();
+      alert(data.message);
+      updateStatus(); // Check status right after triggering sync
+  }
+  async function triggerSyncPlone() {
+      const response = await fetch('/collection/syncStartPlone', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -112,7 +126,8 @@
   <h3>Sync Status: 
     <span id="syncRunning">{% if sync_running %}Syncing{% else %}Not Syncing{% endif %}</span>
   </h3>
-  <button onclick="triggerServerFunction()">Start Sync</button>
+  <button onclick="triggerSyncAPI()">Sync API</button>
+  <button onclick="triggerSyncPlone()">Sync Plone</button>
   <button onclick="stopSync()">Stop Sync</button>
   <button onclick="delete_plone_dates()">Delete Plone Timestamps</button>
   <button onclick="window.location.href='{% url 'not_synced' %}'">Not Synced Objects</button>
