@@ -176,7 +176,7 @@ def sync_start():
 def sync_database(collection):
     count = get_total_count(collection)
     print(count)
-    for offset in range(0, count, 10):
+    for offset in range(0, int(count), 10):
         sync = SyncLock.objects.get(id=1)
         if sync.stop_requested:
             print("Sync stopped by user during database sync.")
