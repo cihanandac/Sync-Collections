@@ -369,7 +369,7 @@ def create_update_object(museum_object):
     plone_url = f"http://localhost:8081/Plone/nl/@@admin_fixes?op=import_collection_object&object_id={museum_object.ccObjectID}&index_name={museum_object.index_name}"
     try:
         response = requests.get(plone_url, auth=HTTPBasicAuth(
-            plone_username, plone_password))
+            plone_username, plone_password), timeout=3600)
         if response.status_code == 200:
             log_message = f"Plone object created/updated successfully for ccObjectID: {museum_object.ccObjectID}"
             logger.info(log_message)
