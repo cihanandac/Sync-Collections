@@ -142,18 +142,24 @@ def syncStartPlone(request):
 def manualsync(request):
     sync, _ = SyncLock.objects.get_or_create(id=1)
     sync_running = sync.is_locked
+    
     if request.method == 'POST':
-        data = json.loads(request.body)
-        ccObjectID = data.get('ccObjectID')
-        ccIndexName = data.get('ccIndexName')
-        if data.get('action') == 'run':
-            if not sync_running:
-                sync_one_plone_object(ccObjectID, ccIndexName)
-                return JsonResponse({'message': f'Synced object {ccObjectID} successfully!'})
+        if sync_running == False:
+            data = json.loads(request.body)
+            ccObjectID = data.get('ccObjectID')
+            ccIndexName = data.get('ccIndexName')
+            if data.get('action') == 'run':
+                if not sync_running:
+                    sync.is_locked = True;
+                    sync.save()
+                    sync_one_plone_object(ccObjectID, ccIndexName)
+                    sync.is_locked = False
+                    sync.save()
+                    return JsonResponse({'message': f'Synced object {ccObjectID} successfully!'})
+                else:
+                    return JsonResponse({'message': 'Sync is already running!'}, status=409)
             else:
-                return JsonResponse({'message': 'Sync is already running!'}, status=409)
-        else:
-            return JsonResponse({'message': 'Invalid action!'}, status=400)
+                return JsonResponse({'message': 'Invalid action!'}, status=400)
     return JsonResponse({'message': 'Only POST requests are allowed!'}, status=405)
 
 
