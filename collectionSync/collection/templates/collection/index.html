@@ -121,11 +121,16 @@
 {% endblock %}
 
 {% block content %}
-  <a href='/'>Homepage</a>
-  <a href='/logs'>Logs</a>
-  <h3>Sync Status: 
-    <span id="syncRunning">{% if sync_running %}Syncing{% else %}Not Syncing{% endif %}</span>
-  </h3>
+  <header class="header">
+    <a href='/'>Homepage</a>
+    <a href='/logs'>Logs</a>
+  </header>
+  <section class="sync-status">
+    <h3>Sync Status: 
+      <span id="syncRunning">{% if sync_running %}Syncing{% else %}Not Syncing{% endif %}</span>
+    </h3>
+  </section>
+  <section class="buttons">
   <button onclick="triggerSyncAPI()">Sync API</button>
   <button onclick="triggerSyncPlone()">Sync Plone</button>
   <button onclick="stopSync()">Stop Sync</button>
@@ -133,70 +138,103 @@
   <button onclick="window.location.href='{% url 'not_synced' %}'">Not Synced Objects</button>
   <button onclick="window.location.href='{% url 'all_objects' %}'">All Objects</button>
   <button onclick="window.location.href='/collection'">Refresh the Page</button>
-  <br><br>
-  <form method="GET" action="{% url 'check_status' 'ccobjectid' %}" onsubmit="this.action = this.action.replace('ccobjectid', document.getElementById('site-search').value.trim()); return true;">
-    <label for="site-search">Search an object with ccObjectID:</label>
-    <input type="search" id="site-search" name="ccObjectID" required />
-    <button type="submit">Search</button>
-  </form>
-  <br><br>
-  <table>
-    <thead>
-      <tr>
-        <th>ccObjectID</th>
-        <th>Synced</th>
-        <th>Sync Manually</th>
-        <th>Object Logs</th>
-        <th>Title</th>
-        <th>Index Name</th>
-        <th>Last Modified in API</th>
-        <th>Time Stamp on Plone</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for museum_object in museum_objects %}
-        <tr>
-          <td>{{ museum_object.ccObjectID }}</td>
-          <td>{{ museum_object.synced }}</td>
-          <td>
-            <button onclick="triggerManualSync('{{ museum_object.ccObjectID }}', '{{ museum_object.index_name }}')">Sync Object</button>
-          </td>
-          <td>
-              <form action="{% url 'show_museum_object_logs' museum_object.id %}" method="get" style="display: inline;">
-                  <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px;">
-                      Object's Logs
-                  </button>
-              </form>
-          </td>
-          <td>{{ museum_object.title }}</td>
-          <td>{{ museum_object.index_name }}</td>
-          <td>{{ museum_object.api_lastmodified }}</td>
-          <td>{{ museum_object.plone_timestamp }}</td> 
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  </section>
 
-  <div class="pagination">
-    <span class="step-links">
-      {% if museum_objects.has_previous %}
-        <a href="?page=1">&laquo; first</a>
-        <a href="?page={{ museum_objects.previous_page_number }}">previous</a>
-      {% endif %}
-
-      <span class="current">
-        Page {{ museum_objects.number }} of {{ museum_objects.paginator.num_pages }}.
-      </span>
-
-      {% if museum_objects.has_next %}
-        <a href="?page={{ museum_objects.next_page_number }}">next</a>
-        <a href="?page={{ museum_objects.paginator.num_pages }}">last &raquo;</a>
-      {% endif %}
-    </span>
-    <form method="GET" action="">
-      <label for="page_number">Go to page:</label>
-      <input type="number" id="page_number" name="page" min="1" max="{{ page_obj.paginator.num_pages }}" required>
-      <button type="submit">Go</button>
+  <section class="search-object">
+    <form method="GET" action="{% url 'check_status' 'ccobjectid' %}" onsubmit="this.action = this.action.replace('ccobjectid', document.getElementById('site-search').value.trim()); return true;">
+      <label for="site-search">Search an object with ccObjectID:</label>
+      <input type="search" id="site-search" name="ccObjectID" required />
+      <button type="submit">Search</button>
     </form>
-  </div>
+  </section>
+
+  <section class="pagination-section">
+      <div class="pagination">
+        <span class="step-links">
+          {% if museum_objects.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ museum_objects.previous_page_number }}">previous</a>
+          {% endif %}
+
+          <span class="current">
+            Page {{ museum_objects.number }} of {{ museum_objects.paginator.num_pages }}.
+          </span>
+
+          {% if museum_objects.has_next %}
+            <a href="?page={{ museum_objects.next_page_number }}">next</a>
+            <a href="?page={{ museum_objects.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+        <form method="GET" action="">
+          <label for="page_number">Go to page:</label>
+          <input type="number" id="page_number" name="page" min="1" max="{{ page_obj.paginator.num_pages }}" required>
+          <button type="submit">Go</button>
+        </form>
+      </div>
+    <section>
+  
+  <main>
+    <section class="table-section">
+      <table>
+        <thead>
+          <tr>
+            <th>ccObjectID</th>
+            <th>Synced</th>
+            <th>Sync Manually</th>
+            <th>Object Logs</th>
+            <th>Title</th>
+            <th>Index Name</th>
+            <th>Last Modified in API</th>
+            <th>Time Stamp on Plone</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for museum_object in museum_objects %}
+            <tr>
+              <td>{{ museum_object.ccObjectID }}</td>
+              <td>{{ museum_object.synced }}</td>
+              <td>
+                <button onclick="triggerManualSync('{{ museum_object.ccObjectID }}', '{{ museum_object.index_name }}')">Sync Object</button>
+              </td>
+              <td>
+                  <form action="{% url 'show_museum_object_logs' museum_object.id %}" method="get" style="display: inline;">
+                      <button class="logs-button" type="submit">
+                          Object's Logs
+                      </button>
+                  </form>
+              </td>
+              <td>{{ museum_object.title }}</td>
+              <td>{{ museum_object.index_name }}</td>
+              <td>{{ museum_object.api_lastmodified }}</td>
+              <td>{{ museum_object.plone_timestamp }}</td> 
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    <section class="pagination-section">
+      <div class="pagination">
+        <span class="step-links">
+          {% if museum_objects.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ museum_objects.previous_page_number }}">previous</a>
+          {% endif %}
+
+          <span class="current">
+            Page {{ museum_objects.number }} of {{ museum_objects.paginator.num_pages }}.
+          </span>
+
+          {% if museum_objects.has_next %}
+            <a href="?page={{ museum_objects.next_page_number }}">next</a>
+            <a href="?page={{ museum_objects.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+        <form method="GET" action="">
+          <label for="page_number">Go to page:</label>
+          <input type="number" id="page_number" name="page" min="1" max="{{ page_obj.paginator.num_pages }}" required>
+          <button type="submit">Go</button>
+        </form>
+      </div>
+    <section>
+  </main>
 {% endblock %}
