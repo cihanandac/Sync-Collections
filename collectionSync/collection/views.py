@@ -381,8 +381,7 @@ def create_update_object(museum_object):
            create_update_object_logger.error(log_message)
 
     except requests.exceptions.Timeout:
-        log_message = f"Timeout occurred for ccObjectID: {
-            museum_object.ccObjectID}. The operation took too long to complete."
+        log_message = f"Timeout occurred for ccObjectID: {museum_object.ccObjectID}. The operation took too long to complete."
         logger.warning(log_message)
         create_update_object_logger.warning(log_message)
         create_update_object_logger.warning("Timeout for creating this object")
