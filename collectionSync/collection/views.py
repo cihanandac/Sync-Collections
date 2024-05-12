@@ -366,7 +366,8 @@ def sync_one_plone_object(ccObjectID, index_name):
 
 
 def create_update_object(museum_object):
-    plone_url = f"http://localhost:8081/Plone/nl/@@admin_fixes?op=import_collection_object&object_id={museum_object.ccObjectID}&index_name={museum_object.index_name}"
+    response = None
+
     try:
         response = requests.get(plone_url, auth=HTTPBasicAuth(
             plone_username, plone_password), timeout=1800)
@@ -385,13 +386,16 @@ def create_update_object(museum_object):
         logger.warning(log_message)
         create_update_object_logger.warning(log_message)
         create_update_object_logger.warning("Timeout for creating this object")
+        museum_object.synced = True
+        museum_object.plone_timestamp = museum_object.api_lastmodified
+        museum_object.save()
     except requests.exceptions.RequestException as e:
         log_message = f"Network exception occurred for ccObjectID: {museum_object.ccObjectID}: {e}"
         create_update_object_logger.error(log_message)
         logger.exception(log_message)
 
     # Update the timestamp only if the request is successful
-    if response.status_code == 200:
+    if response and response.status_code == 200:
         museum_object.synced = True
         museum_object.plone_timestamp = museum_object.api_lastmodified
         museum_object.save()
