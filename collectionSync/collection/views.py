@@ -366,6 +366,8 @@ def sync_one_plone_object(ccObjectID, index_name):
 
 
 def create_update_object(museum_object):
+    plone_url = f"http://localhost:8081/Plone/nl/@@admin_fixes?op=import_collection_object&object_id={museum_object.ccObjectID}&index_name={museum_object.index_name}"
+
     response = None
 
     try:
