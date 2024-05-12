@@ -380,8 +380,15 @@ def create_update_object(museum_object):
            logger.error(log_message)
            create_update_object_logger.error(log_message)
 
+    except requests.exceptions.Timeout:
+        log_message = f"Timeout occurred for ccObjectID: {
+            museum_object.ccObjectID}. The operation took too long to complete."
+        logger.warning(log_message)
+        create_update_object_logger.warning(log_message)
+        create_update_object_logger.warning("Timeout for creating this object")
     except requests.exceptions.RequestException as e:
         log_message = f"Network exception occurred for ccObjectID: {museum_object.ccObjectID}: {e}"
+        create_update_object_logger.error(log_message)
         logger.exception(log_message)
 
     # Update the timestamp only if the request is successful
