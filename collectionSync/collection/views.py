@@ -310,21 +310,28 @@ def sync_database(collection):
                 elif index_name == "VanAbbeBibliotheek":
                     title = dc_record.findtext(".//BookTitle")
 
-                museum_object, created = MuseumObject.objects.get_or_create(
-                    ccObjectID=ccObjectID,
-                    index_name=index_name,
-                    defaults={
-                        "title": title,
-                        "api_lastmodified": timestamp_parsed,
-                    },
-                )
-
-                if not created:
-                    print(f"Updated: {ccObjectID}")
-                else:
+                try:
+                    # Try to get the existing object
+                    museum_object = MuseumObject.objects.get(ccObjectID=ccObjectID, index_name=index_name)
+                    if museum_object.api_lastmodified != timestamp_parsed:
+                        museum_object.api_lastmodified = timestamp_parsed
+                        museum_object.title = title  # Update title if necessary
+                        museum_object.save()
+                        print(f"Updated: {ccObjectID}")
+                    else:
+                        print(f"No change for: {ccObjectID}")
+                except MuseumObject.DoesNotExist:
+                    # Create a new object if it doesn't exist
+                    museum_object = MuseumObject.objects.create(
+                        ccObjectID=ccObjectID,
+                        index_name=index_name,
+                        title=title,
+                        api_lastmodified=timestamp_parsed,
+                    )
                     print(f"Created new object: {ccObjectID}")
+
             else:
-                create_update_object_logger.error(f"Plone object creation failed")
+                create_update_object_logger.error(f"Timestamp missing for object: {ccObjectID}")
 
     return "finished"
 
