@@ -17,6 +17,7 @@ class ObjectLogAdmin(admin.ModelAdmin):
     list_filter = ("museum_object", "timestamp")
     search_fields = ("museum_object__ccObjectID", "log_message")
 
+
 # Register both models
 admin.site.register(MuseumObject, MuseumObjectAdmin)
 admin.site.register(SyncLock, SyncLockAdmin)

@@ -3,11 +3,26 @@ from django.db import models
 
 class MuseumObject(models.Model):
     title = models.CharField(default="", max_length=50, null=True, blank=True)
-    ccObjectID = models.CharField(default="", db_index=True, max_length=50,)
-    api_lastmodified = models.DateTimeField(null=True, blank=True,)
-    plone_timestamp = models.DateTimeField(null=True, blank=True,)
-    index_name = models.CharField(default="", max_length=50,)
-    synced = models.BooleanField(null=True,)
+    ccObjectID = models.CharField(
+        default="",
+        db_index=True,
+        max_length=50,
+    )
+    api_lastmodified = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    plone_timestamp = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    index_name = models.CharField(
+        default="",
+        max_length=50,
+    )
+    synced = models.BooleanField(
+        null=True,
+    )
 
     def save(self, *args, **kwargs):
         # Update `synced` based on the comparison of `api_lastmodified` and `plone_timestamp`
@@ -15,9 +30,8 @@ class MuseumObject(models.Model):
             self.synced = True
         else:
             self.synced = False
-        
-        super(MuseumObject, self).save(*args, **kwargs)
 
+        super(MuseumObject, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title}"
@@ -35,7 +49,8 @@ class SyncLock(models.Model):
 
 class ObjectLog(models.Model):
     museum_object = models.ForeignKey(
-        MuseumObject, on_delete=models.CASCADE, related_name='logs')
+        MuseumObject, on_delete=models.CASCADE, related_name="logs"
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
     log_message = models.TextField()
 
@@ -44,8 +59,9 @@ class ObjectLog(models.Model):
 
     @staticmethod
     def cleanup_old_logs(museum_object, limit=10):
-        logs = ObjectLog.objects.filter(
-            museum_object=museum_object).order_by('-timestamp')
+        logs = ObjectLog.objects.filter(museum_object=museum_object).order_by(
+            "-timestamp"
+        )
         if logs.count() > limit:
             for log in logs[limit:]:
                 log.delete()

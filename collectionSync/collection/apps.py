@@ -9,6 +9,7 @@ class CollectionConfig(AppConfig):
     def ready(self):
         # Import the SyncLock model within the ready method
         from .models import SyncLock
+
         try:
             # Retrieve the singleton lock and set `is_locked` to False
             lock, _ = SyncLock.objects.get_or_create(id=1)

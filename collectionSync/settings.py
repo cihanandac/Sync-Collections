@@ -11,9 +11,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os
-from decouple import config, Csv
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,88 +20,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-kw24u&^^@%9af4rt-s(jh2nmkoud3d985*kmd#xvtk7f_pdju1"
-# COLLECTION_TYPES = config('COLLECTION_TYPES')
+SECRET_KEY = "django-insecure-@t0&zh5r@yto--+xd6f^9t6%q((bb2$_rq2&^jpsf!2h3o9++="
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = []
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "{asctime} {levelname} {module} {message}",
-            "style": "{",
-        },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
-        },
-    },
-    "handlers": {
-        "file_info": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/sync_info.log"),
-            "formatter": "verbose",
-        },
-        "file_error": {
-            "level": "ERROR",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/sync_error.log"),
-            "formatter": "verbose",
-        },
-        "file_debug": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/sync_debug.log"),
-            "formatter": "verbose",
-        },
-        "sync_start_file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/sync_start.log"),
-            "formatter": "verbose",
-        },
-        "create_update_object_file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/create_update_object.log"),
-            "formatter": "verbose",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file_info", "file_error", "file_debug"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
-        "collection_sync": {
-            "handlers": ["file_info", "file_error", "file_debug"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
-        "sync_start_logger": {
-            "handlers": ["sync_start_file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "create_update_object_logger": {
-            "handlers": ["create_update_object_file"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-    },
-}
 
 # Application definition
 
 INSTALLED_APPS = [
-    "collection",
-    "homepage",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -185,18 +111,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = None
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
